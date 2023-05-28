@@ -1,25 +1,46 @@
 
 import * as React from "react";
-import {Alert, Image, StyleSheet, Text, TextInput, View, SafeAreaView, Pressable} from "react-native";
-import {validateEmail, validName} from "../utils";
+import {Alert, Image, StyleSheet, Text, TextInput, View, SafeAreaView, Pressable, useWindowDimensions} from "react-native";
+import {validateEmail, validName, getProfile, saveProfile} from "../utils";
+import SplashScreen from "../components/SplashScreen";
 
-const Onboarding = ()=>{
+const Onboarding = ({ navigation })=>{
+    const {height, width} = useWindowDimensions();
+    const [isLoading, setIsLoading] = React.useState(true);
     const [email, setEmail] = React.useState('');
-
     const [name, setName] = React.useState('');
-
     const isEmailValid = validateEmail(email);
-
     const isValidName = validName(name);
-    return <SafeAreaView style={styles.container}>
-        <View style={styles.header} >
+
+    React.useEffect(()=>{
+        const fetchData = async () => {
+        const profile = await getProfile();
+        if(profile){
+            const data = JSON.parse(profile);
+            setName(data.firstName);
+            setEmail(data.email);
+            navigation.navigate("Profile");
+        }
+        setTimeout(()=>setIsLoading(false), 1000);
+
+        }
+    fetchData();
+
+    },[]);
+
+    if (isLoading) {
+        return <SplashScreen />;
+        }
+
+    return <SafeAreaView style={[styles.container,{ padding: width * .05}]}>
+        <View style={[styles.header, {marginBottom: height * .1, paddingTop: height *.1}]} >
         <Image source={require('../assets/Logo.png')} />
         </View>
-       <Text style={styles.title}>
+       <Text style={[styles.title,{ paddingBottom:height *.05}]}>
         Let us get to know you
       </Text>
       <Text style={styles.label}>
-        Name *
+        First Name *
       </Text>
       <TextInput
         style={styles.input}
@@ -28,7 +49,7 @@ const Onboarding = ()=>{
         onChangeText={setName}
         placeholder={"Type your name"}
       />
-        {!isValidName && <Text style={styles.error}>Invalid name format (letters, space, hyphen, comma, and period only)</Text>}
+        {name && !isValidName && <Text style={styles.error}>Invalid name format (At least 2 characters with letters, space, hyphen, comma, and period only)</Text>}
         <Text style={styles.label}>
         Email *
       </Text>
@@ -41,9 +62,12 @@ const Onboarding = ()=>{
         textContentType="emailAddress"
         placeholder={"Type your email"}
       />
-      {!isEmailValid && <Text style={styles.error}>Invalid email format</Text>}
+      { email && !isEmailValid && <Text style={styles.error}>Invalid email format</Text>}
       <Pressable
-      onPress={()=>  Alert.alert("Thanks for subscribing, stay tuned!")}
+      onPress={async ()=>  {
+        await saveProfile({firstName: name, email: email});
+        navigation.navigate("Profile");
+      }}
       style={[styles.pressable,  (!isEmailValid || !isValidName) && styles.pressableDisabled]}
       disabled={!isEmailValid || !isValidName}
 
@@ -57,25 +81,19 @@ const Onboarding = ()=>{
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 24,
         backgroundColor: "white",
       },
       header:{
         alignSelf: "center",
-        paddingTop: 20,
-        paddingBottom: 20,
-        marginBottom: 150
       },
       label:{
         color: "grey",
-        fontSize: 20,
+        fontSize: 16,
       },
       title: {
         color: "#333333",
         textAlign: "center",
         fontSize: 20,
-        marginBottom: 50
-
       },
       logo: {
         height: 100,
@@ -89,7 +107,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         borderWidth: 1,
         padding: 10,
-        fontSize: 20,
+        fontSize: 16,
         borderColor: "#495E57",
       },
       pressable: {
@@ -101,7 +119,7 @@ const styles = StyleSheet.create({
       },
       error:{
         color: "#EE9972",
-        fontSize: 20,
+        fontSize: 14,
         paddingBottom: 20
       },
       pressableDisabled: {
@@ -109,7 +127,7 @@ const styles = StyleSheet.create({
         opacity: 0.5,
       },
       pressableText: {
-        fontSize: 20,
+        fontSize: 16,
         color: "#495E57",
       }
   });
