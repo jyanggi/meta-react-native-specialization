@@ -13,6 +13,12 @@ export const validName = (name) => {
   );
 };
 
+
+export const validatePhone = (name) => {
+  return name.match(
+    /^[0-9]{10}$/
+  );
+};
 const LITTLE_LEMON_PROFILE = "littleLemonProfile";
 
 export const saveProfile = async(profile) => {
@@ -36,6 +42,15 @@ export const mergeProfile = async (profile) => {
   try {
     const jsonValue = JSON.stringify(profile)
     await AsyncStorage.mergeItem(LITTLE_LEMON_PROFILE, jsonValue)
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+
+export const clearProfile = async() => {
+  try {
+     await AsyncStorage.clear();
   } catch(e) {
     console.error(e);
   }
