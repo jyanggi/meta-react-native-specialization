@@ -1,8 +1,8 @@
 
 import * as React from "react";
-import { Image, StyleSheet, Text, TextInput, View, SafeAreaView, ScrollView,  useWindowDimensions} from "react-native";
+import { Image, StyleSheet, Text, TextInput, View, SafeAreaView, ScrollView,  useWindowDimensions, Alert} from "react-native";
 import { CheckBox, Separator } from "react-native-btr";
-import {validateEmail, validName, getProfile, validatePhone, clearProfile} from "../utils";
+import {validateEmail, validName, getProfile, validatePhone, clearProfile, saveProfile} from "../utils";
 import * as ImagePicker from 'expo-image-picker';
 import { MaskedTextInput } from "react-native-mask-text";
 import Avatar from "../components/Avatar";
@@ -11,6 +11,7 @@ import LittleLemonButton from "../components/LittleLemonButton";
 const Profile = ({navigation})=>{
 
     const {height, width} = useWindowDimensions();
+    const [isValid, setIsValid] = React.useState(true);
     const reducer = (state, action) => {
       console.log(JSON.stringify(state, null, 2));
       console.log(JSON.stringify(action, null, 2));
@@ -22,10 +23,10 @@ const Profile = ({navigation})=>{
           return {...state, lastName: action.lastName}
         case "EMAIL":
           return {...state, email: action.email}
-        case "EMAIL":
+        case "PHONE_NUMBER":
           return {...state, phoneNumber: action.phoneNumber}
         case "ALL":
-          return {...state, ...action.profile}
+          return {...action.profile}
         case "ORDER_STATUSES":
           return {...state, orderStatuses: action.orderStatuses}
         case "PASSWORD_CHANGES":
@@ -53,7 +54,16 @@ const Profile = ({navigation})=>{
     fetchData();
 
   },[])
+  React.useEffect(()=>{
 
+    setIsValid(
+      profile.phoneNumber && validatePhone(profile.phoneNumber) &&
+      profile.firstName && validName(profile.firstName) &&
+      profile.lastName && validName(profile.lastName) &&
+      profile.email && validateEmail(profile.email)
+    );
+
+  },[profile])
 
     const pickImage = async () => {
       let result = await ImagePicker.launchImageLibraryAsync({
@@ -196,7 +206,39 @@ const Profile = ({navigation})=>{
         fontSize= {16}
         textColor= "#495E57"
       />
-
+  <View style={{ padding: height * .03, flexDirection: "row", flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+  <LittleLemonButton
+      buttonStyle={{marginRight: 10, borderStyle: "solid", borderWidth: 1, borderColor : "#495E57"}}
+      onPress={async ()=>{
+          const profile = await getProfile();
+          const jsonData =  JSON.parse(profile);
+          dispatch({type: 'ALL', profile: jsonData })
+        }
+      }
+        text="Discard Changes"
+        fontSize= {16}
+        textColor= "#495E57"
+        color="white"
+      />
+      <LittleLemonButton
+      onPress={async ()=> {
+        if(isValid){
+          await saveProfile(profile);
+          Alert.alert('Success', 'Changes saved', [
+            {text: 'OK', onPress: () => console.log('OK Pressed')},
+          ]);
+        }else{
+          Alert.alert('Validation', 'Please fill up required fields with correct format', [
+            {text: 'OK', onPress: () => console.log('OK Pressed')},
+          ]);
+        }
+      }}
+        text="Save Changes"
+        fontSize= {16}
+        textColor= "#EDEFEE"
+        color="#495E57"
+      />
+    </View>
 </SafeAreaView></ScrollView>);
 
 }

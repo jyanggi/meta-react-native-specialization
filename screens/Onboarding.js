@@ -1,6 +1,6 @@
 
 import * as React from "react";
-import { Image, StyleSheet, Text, TextInput, View, SafeAreaView, Pressable, useWindowDimensions} from "react-native";
+import { Image, StyleSheet, Text, TextInput, View, SafeAreaView,  useWindowDimensions} from "react-native";
 import {validateEmail, validName, saveProfile} from "../utils";
 import LittleLemonButton from "../components/LittleLemonButton";
 
