@@ -2,19 +2,19 @@
 import * as React from "react";
 import { Image, StyleSheet, Text, TextInput, View, SafeAreaView, ScrollView,  useWindowDimensions, Alert} from "react-native";
 import { CheckBox, Separator } from "react-native-btr";
-import {validateEmail, validName, getProfile, validatePhone, clearProfile, saveProfile, getInitials} from "../utils";
+import {validateEmail, validName,  validatePhone, clearProfile, saveProfile, getInitials} from "../utils";
 import * as ImagePicker from 'expo-image-picker';
 import { MaskedTextInput } from "react-native-mask-text";
 import Avatar from "../components/Avatar";
 import LittleLemonButton from "../components/LittleLemonButton";
+import { LoggedInContext } from "../context";
+
 
 const Profile = ({navigation})=>{
 
     const {height, width} = useWindowDimensions();
     const [isValid, setIsValid] = React.useState(true);
     const reducer = (state, action) => {
-
-
       switch (action.type) {
         case "FIRST_NAME":
           return {...state, firstName: action.firstName}
@@ -42,16 +42,10 @@ const Profile = ({navigation})=>{
     };
 
   const [profile, dispatch] = React.useReducer(reducer, {});
-
+  const context = React.useContext(LoggedInContext);
 
   React.useEffect(()=>{
-    const fetchData = async ()=>{
-      const profile = await getProfile();
-      const jsonData =  JSON.parse(profile);
-      dispatch({type: 'ALL', profile: jsonData })
-    }
-    fetchData();
-
+    dispatch({type: 'ALL', profile: context.state.profile });
   },[])
   React.useEffect(()=>{
 
@@ -200,7 +194,8 @@ const Profile = ({navigation})=>{
       buttonStyle={{marginTop: 25, marginBottom: 25}}
       onPress={async ()=>  {
         await clearProfile();
-        navigation.push("Onboarding")
+        context.dispatch({type: 'LOGOUT'})
+        navigation.navigate("Onboarding")
       }}
         text="Logout"
         fontSize= {16}
@@ -209,10 +204,8 @@ const Profile = ({navigation})=>{
   <View style={{ padding: height * .03, flexDirection: "row", flex: 1, alignItems: 'center', justifyContent: 'center' }}>
   <LittleLemonButton
       buttonStyle={{marginRight: 10, borderStyle: "solid", borderWidth: 1, borderColor : "#495E57"}}
-      onPress={async ()=>{
-          const profile = await getProfile();
-          const jsonData =  JSON.parse(profile);
-          dispatch({type: 'ALL', profile: jsonData })
+      onPress={()=>{
+          dispatch({type: 'ALL', profile: context.state.profile })
         }
       }
         text="Discard Changes"
@@ -224,6 +217,7 @@ const Profile = ({navigation})=>{
       onPress={async ()=> {
         if(isValid){
           await saveProfile(profile);
+          context.dispatch({type: 'LOGIN', profile: profile })
           Alert.alert('Success', 'Changes saved', [
             {text: 'OK', onPress: () => {}},
           ]);

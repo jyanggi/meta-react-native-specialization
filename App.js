@@ -12,18 +12,20 @@ import {
   getMenuItems,
   saveMenuItems
 } from './database';
+
+
+import { LoggedInContext, contextReducer, initialState } from './context';
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [state, dispatch] = React.useReducer(contextReducer, initialState);
   const [isLoading, setIsLoading] = React.useState(true);
-  const [isOnboardingCompleted, setIsOnboardingCompleted] = React.useState(false);
 
   const [fontsLoaded] = useFonts({
     'MarkaziText-Regular': require('./assets/Fonts/MarkaziText-Regular.ttf'),
     'Karla-Regular': require('./assets/Fonts/Karla-Regular.ttf'),
   });
-
-
 
 
   React.useEffect(()=>{
@@ -35,7 +37,9 @@ export default function App() {
        saveMenuItems(menuItems.menu);
       }
       const profile = await getProfile();
-      setIsOnboardingCompleted(profile? true: false);
+      if(profile){
+        dispatch({type: "LOGIN", profile: JSON.parse(profile)})
+      }
       setTimeout(()=> setIsLoading(false), 800)
       }
   fetchData();
@@ -46,14 +50,17 @@ export default function App() {
     return <SplashScreen />;
   }
   return (
-    <>
+    <LoggedInContext.Provider  value={{
+      state,
+      dispatch
+    }}>
     <NavigationContainer>
     <Stack.Navigator
       screenOptions={{
         headerShown: false
       }}
     >
-  {isOnboardingCompleted ? (
+  {state.isLoggedIn ? (
    // Onboarding completed, user is signed in
    <>
      <Stack.Screen name="Home" component={Home} />
@@ -65,7 +72,7 @@ export default function App() {
    )}
   </Stack.Navigator>
   </NavigationContainer>
-  </>
+  </LoggedInContext.Provider>
   );
 }
 

@@ -1,5 +1,5 @@
 
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo, useContext } from 'react';
 import { Image, StyleSheet, Text,  View, SafeAreaView,  useWindowDimensions, FlatList, Pressable, Alert} from "react-native";
 import {  Separator } from "react-native-btr";
 import {getProfile, getInitials, useUpdateEffect} from "../utils";
@@ -8,7 +8,7 @@ import MenuItem from "../components/MenuItem";
 import CategoryList from "../components/CategoryList";
 import debounce from 'lodash.debounce';
 import { Searchbar } from 'react-native-paper';
-
+import { LoggedInContext } from "../context";
 import {
   getMenuItems,
   filterByQueryAndCategories
@@ -18,9 +18,8 @@ import {
 const sections = ['Starters', 'Mains', 'Desserts', 'Drinks', 'Specials'];
 
 const Home = ({navigation})=>{
-
+    const {state} = useContext(LoggedInContext);
     const {height, width} = useWindowDimensions();
-    const [profile, setProfile] = useState(null);
     const [menu, setMenu] = useState([]);
     const [filterSelections, setFilterSelections] = useState(
       sections.map(() => false)
@@ -49,9 +48,6 @@ const Home = ({navigation})=>{
 
   useEffect(()=>{
     const fetchData = async ()=>{
-      const profile = await getProfile();
-      const jsonData =  JSON.parse(profile);
-       setProfile(jsonData);
        let dbMenuItems = await getMenuItems();
        setMenu(dbMenuItems);
     }
@@ -80,12 +76,12 @@ const Home = ({navigation})=>{
     })();
   }, [filterSelections, query]);
 
-    return (profile && <SafeAreaView style={[styles.container]}>
+    return (state.profile && <SafeAreaView style={[styles.container]}>
     <View style={{width: width, minHeight: height *.6}}>
     <View style={[styles.header, {marginBottom: height * .01, paddingTop: height *.1}]} >
     <Image resizeMode= "contain" style={{width: width *.8, height: height * .05}} source={require('../assets/Logo.png')} />
     <Pressable onPress={()=> navigation.navigate("Profile")}>
-    <Avatar size={height * .05} width={width * .2} placeholder={getInitials(profile)}  url={profile.image}/>
+    <Avatar size={height * .05} width={width * .2} placeholder={getInitials(state.profile)}  url={state.profile.image}/>
     </Pressable>
     </View>
     <View style={[styles.hero]}>

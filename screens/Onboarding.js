@@ -3,13 +3,14 @@ import * as React from "react";
 import { Image, StyleSheet, Text, TextInput, View, SafeAreaView,  useWindowDimensions} from "react-native";
 import {validateEmail, validName, saveProfile} from "../utils";
 import LittleLemonButton from "../components/LittleLemonButton";
-
+import { LoggedInContext } from "../context";
 const Onboarding = ({ navigation })=>{
     const {height, width} = useWindowDimensions();
     const [email, setEmail] = React.useState('');
     const [name, setName] = React.useState('');
     const isEmailValid = validateEmail(email);
     const isValidName = validName(name);
+    const { dispatch } = React.useContext(LoggedInContext);
 
     return <SafeAreaView style={[styles.container,{ padding: width * .05}]}>
         <View style={[styles.header, {marginBottom: height * .1, paddingTop: height *.1}]} >
@@ -43,7 +44,9 @@ const Onboarding = ({ navigation })=>{
       <LittleLemonButton
       buttonStyle={(!isEmailValid || !isValidName) && styles.pressableDisabled}
       onPress={async ()=>  {
+        const profile = {firstName: name, email: email}
         await saveProfile({firstName: name, email: email});
+        dispatch({type: "LOGIN", profile: profile});
         navigation.navigate("Profile");
       }}
         text="Next"
