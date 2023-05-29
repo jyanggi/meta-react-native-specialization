@@ -2,7 +2,7 @@
 import * as React from "react";
 import { Image, StyleSheet, Text, TextInput, View, SafeAreaView, ScrollView,  useWindowDimensions, Alert} from "react-native";
 import { CheckBox, Separator } from "react-native-btr";
-import {validateEmail, validName, getProfile, validatePhone, clearProfile, saveProfile} from "../utils";
+import {validateEmail, validName, getProfile, validatePhone, clearProfile, saveProfile, getInitials} from "../utils";
 import * as ImagePicker from 'expo-image-picker';
 import { MaskedTextInput } from "react-native-mask-text";
 import Avatar from "../components/Avatar";
@@ -13,8 +13,7 @@ const Profile = ({navigation})=>{
     const {height, width} = useWindowDimensions();
     const [isValid, setIsValid] = React.useState(true);
     const reducer = (state, action) => {
-      console.log(JSON.stringify(state, null, 2));
-      console.log(JSON.stringify(action, null, 2));
+
 
       switch (action.type) {
         case "FIRST_NAME":
@@ -77,18 +76,18 @@ const Profile = ({navigation})=>{
       }
     };
 
-    const getInitials = (data)=> {
-      console.log(data);
-      const firstInitial = data?.firstName?.substring(0,1)?.toUpperCase()  || "";
-      const lastInitial = data?.lastName?.substring(0,1)?.toUpperCase()  || "";
-      return `${firstInitial}${lastInitial}`;
-    }
-
-
     return (profile && <ScrollView><SafeAreaView style={[styles.container,{ padding: width * .05}]}>
     <View style={[styles.header, {marginBottom: height * .05, paddingTop: height *.1}]} >
-    <Image resizeMode= "contain" style={{width: width * .7, maxHeight: height * .05}} source={require('../assets/Logo.png')} />
-    <Avatar size={height * .05} placeholder={getInitials(profile)}  url={profile.image}/>
+    <LittleLemonButton
+      onPress={()=> navigation.navigate("Home")}
+      buttonStyle={{padding: 0, width: width * .1, height: width * .1, borderRadius: (width * .1)/2}}
+        text="&larr;"
+        fontSize= {20}
+        textColor= "#EDEFEE"
+        color="#495E57"
+      />
+    <Image resizeMode= "contain" style={{width: width * .6, maxHeight: height * .05}} source={require('../assets/Logo.png')} />
+    <Avatar size={height * .05} width={width * .2} placeholder={getInitials(profile)}  url={profile.image}/>
     </View>
    <Text style={[styles.title,{ paddingBottom:height *.02, paddingTop:height *.02}]}>
     Personal Information
@@ -102,6 +101,7 @@ const Profile = ({navigation})=>{
         fontSize= {16}
         textColor= "#EDEFEE"
         color="#495E57"
+
       />
       <LittleLemonButton
       buttonStyle={{ borderStyle: "solid", borderWidth: 1, borderColor : "#495E57"}}
@@ -225,11 +225,11 @@ const Profile = ({navigation})=>{
         if(isValid){
           await saveProfile(profile);
           Alert.alert('Success', 'Changes saved', [
-            {text: 'OK', onPress: () => console.log('OK Pressed')},
+            {text: 'OK', onPress: () => {}},
           ]);
         }else{
           Alert.alert('Validation', 'Please fill up required fields with correct format', [
-            {text: 'OK', onPress: () => console.log('OK Pressed')},
+            {text: 'OK', onPress: () => {}},
           ]);
         }
       }}
@@ -254,21 +254,18 @@ const styles = StyleSheet.create({
       justifyContent: "center",
       flex: 1,
       flexDirection: "row",
+      fontFamily: "Karla-Regular"
     },
     label:{
       color: "grey",
       fontSize: 15,
-      marginLeft: 10
+      marginLeft: 10,
+      fontFamily: "Karla-Regular"
     },
     title: {
       color: "#333333",
       fontSize: 20,
-    },
-    logo: {
-      height: 100,
-      width: 300,
-      resizeMode: "contain",
-      marginBottom: 32,
+      fontFamily: "Karla-Regular"
     },
     input: {
       height: 35,
@@ -278,11 +275,13 @@ const styles = StyleSheet.create({
       padding: 8,
       fontSize: 16,
       borderColor: "#495E57",
+      fontFamily: "Karla-Regular"
     },
     error:{
       color: "#EE9972",
       fontSize: 14,
-      paddingBottom: 15
+      paddingBottom: 15,
+      fontFamily: "Karla-Regular"
     },
     checkboxRow: {
       flexDirection: "row",

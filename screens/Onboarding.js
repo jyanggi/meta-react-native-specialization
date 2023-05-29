@@ -66,17 +66,13 @@ const styles = StyleSheet.create({
       label:{
         color: "grey",
         fontSize: 16,
+        fontFamily: "Karla-Regular"
       },
       title: {
         color: "#333333",
         textAlign: "center",
         fontSize: 20,
-      },
-      logo: {
-        height: 100,
-        width: 300,
-        resizeMode: "contain",
-        marginBottom: 32,
+        fontFamily: "Karla-Regular"
       },
       input: {
         height: 40,
@@ -86,11 +82,13 @@ const styles = StyleSheet.create({
         padding: 10,
         fontSize: 16,
         borderColor: "#495E57",
+        fontFamily: "Karla-Regular"
       },
       error:{
         color: "#EE9972",
         fontSize: 14,
-        paddingBottom: 20
+        paddingBottom: 20,
+        fontFamily: "Karla-Regular"
       },
       pressableDisabled: {
         backgroundColor: 'grey',

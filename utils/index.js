@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRef, useEffect } from 'react';
 
 export const validateEmail = (email) => {
   return email.match(
@@ -54,4 +55,36 @@ export const clearProfile = async() => {
   } catch(e) {
     console.error(e);
   }
+}
+
+
+const API_URL =
+'https://raw.githubusercontent.com/Meta-Mobile-Developer-PC/Working-With-Data-API/main/capstone.json';
+export const fethMenu = async() => {
+  try{
+    const result = await fetch(API_URL)
+    return await result.json()
+  }catch(e){
+    console.error(e);
+  }
+  return [];
+}
+
+
+export const getInitials = (data)=> {
+  const firstInitial = data?.firstName?.substring(0,1)?.toUpperCase()  || "";
+  const lastInitial = data?.lastName?.substring(0,1)?.toUpperCase()  || "";
+  return `${firstInitial}${lastInitial}`;
+}
+
+export function useUpdateEffect(effect, dependencies = []) {
+  const isInitialMount = useRef(true);
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+    } else {
+      return effect();
+    }
+  }, dependencies);
 }

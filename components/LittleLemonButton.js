@@ -7,7 +7,7 @@ const LittleLemonButton = ({onPress, text, textColor, fontSize, color, disabled,
         style={[styles.pressable, {backgroundColor: color||'#F4CE14'},  buttonStyle]}
         disabled={disabled}
       >
-        <Text style={{fontSize: fontSize, color: textColor}}>{text}</Text>
+        <Text style={{fontFamily: "Karla-Regular", fontSize: fontSize, color: textColor}}>{text}</Text>
       </Pressable>)
 }
 
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         flexDirection: 'row',
         justifyContent: 'center',
-        padding: 8,
+        padding: 10,
       },
   });
 export default LittleLemonButton;
