@@ -9,12 +9,12 @@ const MenuItem = ({name, price, description, image, category})=>{
     const {height, width} = useWindowDimensions();
     return (
     <View style={styles.menuContainer}>
-    <View style={[styles.menuInfo, {width: width*.6}]}>
+    <View style={[styles.menuInfo, {width: width*.7}]}>
     <Text style={styles.name}>{name}</Text>
     <Text style={styles.description}>{description}</Text>
     <Text style={styles.price}>${price}</Text>
     </View>
-    <Image resizeMode= "contain" style={{width: width *.4, height: width *.4}} source={{ uri: getImageUrl(image),  cache: 'only-if-cached'}} />
+    <Image resizeMode= "contain" style={{width: width *.3, height: width *.3}} source={{ uri: getImageUrl(image),  cache: 'only-if-cached'}} />
     </View>);
 }
 
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     menuContainer:{
         flex: 1,
         flexDirection: "row",
-        padding: 25
+        padding: 10
     },
     menuInfo:{
         flexDirection: "column",
@@ -31,20 +31,20 @@ const styles = StyleSheet.create({
     },
     name: {
         color: "black",
-        fontSize: 20,
+        fontSize: 16,
         fontFamily: 'Karla-Regular',
         fontWeight: "bold",
         marginBottom: 10
       },
       description: {
         color: "#333333",
-        fontSize: 14,
+        fontSize: 12,
         fontFamily: 'Karla-Regular',
         marginBottom: 10
       },
       price: {
         color: "#495E57",
-        fontSize: 16,
+        fontSize: 14,
         fontFamily: 'Karla-Regular',
         fontWeight: "bold",
       },
